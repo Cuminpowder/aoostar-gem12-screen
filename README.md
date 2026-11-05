@@ -2,6 +2,9 @@
 
 ![screenshot](docs/screenshot.jpg)
 
+<sub>Screenshot: *full-bleed* layout. The artwork is third-party fan art used for
+demonstration only — it is not part of this project and not covered by its licence.</sub>
+
 Turn the otherwise useless little display on an **AOOSTAR GEM12** mini-PC into
 a personal dashboard: pick any picture, choose a layout, crop it like a chat
 avatar, and push it to the 960×376 front panel — with live time, CPU
