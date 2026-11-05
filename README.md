@@ -147,24 +147,15 @@ If the web UI does not run on the same machine as the agent, point
 | new image does not appear | the agent caches panels at start-up | restart it (`restart_cmd`) |
 | image appears shifted / garbled | agent left in a bad state after many rapid pushes | restart the agent; it does a clean full repaint |
 
-## Prior art & credits
+## Built on
 
-Two excellent projects already reverse-engineered this panel — if you don't need a
-browser upload UI, start there:
+The panel protocol is implemented by **[zehnm/aoostar-rs](https://github.com/zehnm/aoostar-rs)**
+(MIT/Apache-2.0) — this project uses it as the backend: we render the picture and feed it
+sensor values, `asterctl` does the USB talking. Thanks to Markus Zehnder for the reverse
+engineering; without it this screen would still only speak to a closed-source binary.
 
-* **[zehnm/aoostar-rs](https://github.com/zehnm/aoostar-rs)** (MIT/Apache-2.0) — a clean
-  Rust implementation of the AOOSTAR protocol. It replaces the vendor agent entirely:
-  display on/off, images with partial updates, and sensor panels driven by text files.
-  If you want to get rid of AOOSTAR-X (and of the `type` / `mianban` quirks this project
-  works around), this is the way.
-* **[marianvid/gem12-dashboard](https://github.com/marianvid/gem12-dashboard)** (Apache-2.0) —
-  an interactive Proxmox dashboard built on `aoostar-rs`, including using the MAFP
-  fingerprint reader as a touch controller.
-
-This project takes a different, narrower path: it keeps the vendor agent (which already
-renders the sensor readouts) and adds a browser UI for "put my own picture there, cropped
-the way I want it". If `aoostar-rs` grows an equivalent upload UI, using it directly is
-the better choice.
+The dashboard in **[marianvid/gem12-dashboard](https://github.com/marianvid/gem12-dashboard)**
+is a great example of going further in the other direction (touch control, storage health).
 
 ## Notes on assets
 
