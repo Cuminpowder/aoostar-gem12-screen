@@ -1,0 +1,10 @@
+{
+  "aoostar_url": "http://127.0.0.1:5123",
+  "username": "admin",
+  "password": "123456",
+  "restart_cmd": "systemctl restart aoostar-x-service",
+  "data_dir": "./data",
+  "switch_time": "60",
+  "header": "GEM12",
+  "fonts": []
+}
