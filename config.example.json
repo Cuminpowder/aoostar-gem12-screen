@@ -3,6 +3,8 @@
   "username": "admin",
   "password": "123456",
   "restart_cmd": "systemctl restart aoostar-x-service",
+  "deploy_cmd": "",
+  "deploy_dir": "",
   "data_dir": "./data",
   "switch_time": "60",
   "header": "GEM12",

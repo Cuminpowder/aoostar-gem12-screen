@@ -34,6 +34,8 @@ def load_config():
         "username": "admin",
         "password": "123456",
         "restart_cmd": "systemctl restart aoostar-x-service",
+        "deploy_cmd": "",          # e.g. "ssh screen-host 'tar xzf - -C /opt/gem12/panels && systemctl restart aster-panel'"
+        "deploy_dir": "",          # local staging dir; defaults to <data_dir>/push
         "data_dir": os.path.join(ROOT, "data"),
         "switch_time": "60",
         "fonts": [],
@@ -41,7 +43,8 @@ def load_config():
     path = os.path.join(ROOT, "config.json")
     if os.path.exists(path):
         cfg.update(json.load(open(path)))
-    for k in ("aoostar_url", "username", "password", "restart_cmd", "data_dir", "switch_time"):
+    for k in ("aoostar_url", "username", "password", "restart_cmd", "deploy_cmd", "deploy_dir",
+              "data_dir", "switch_time"):
         env = os.environ.get("GEM12_" + k.upper())
         if env:
             cfg[k] = env
@@ -239,7 +242,52 @@ def api_login():
     return op
 
 
+ASTER_SENSORS = [
+    ("时间", "DATE_h_m_2", 235, 122, 86, "#f7f1ff", "", -1),
+    ("日期", "DATE_y_m_d_3", 235, 182, 19, "#b09ece", "", 0),
+    ("CPU温度", "cpu_temperature", 300, 226, 32, "#ffd7e6", " ℃", 0),
+    ("CPU占用", "cpu_percent", 300, 264, 32, "#d8f0ff", " %", 0),
+    ("内存", "memory_usage", 300, 302, 32, "#efe0ff", " %", 0),
+]
+
+
+def aster_sensor(name, label, cx, cy, size, color, unit="", dec=-1, w=400):
+    h = round(size * 1.16)
+    return {"mode": 1, "type": 1, "name": name, "label": label,
+            "x": round(cx - w / 2, 1), "y": round(cy - h / 2 + 2, 1), "width": w, "height": h,
+            "textDirection": 0, "direction": 1, "value": "-",
+            "fontFamily": "HarmonyOS_Sans_SC_Bold", "fontSize": size, "fontColor": color,
+            "fontWeight": "normal", "textAlign": "center", "integerDigits": -1,
+            "decimalDigits": dec, "unit": unit, "minAngle": 0, "maxAngle": 360,
+            "minValue": 0, "maxValue": 100, "pic": "", "xz_x": 0, "xz_y": 0}
+
+
+def push_asterctl(panels):
+    """asterctl backend: render background images + monitor.json, hand the dir to deploy_cmd."""
+    stage = CFG.get("deploy_dir") or os.path.join(CFG["data_dir"], "push")
+    os.makedirs(stage, exist_ok=True)
+    for old in os.listdir(stage):
+        os.remove(os.path.join(stage, old))
+    diy = []
+    for i, p in enumerate(panels, 1):
+        im = Image.open(p["file"])
+        jpg = compose(im, p.get("caption", ""), p.get("cx"), p.get("cy"), p.get("cw"),
+                      p.get("style", "card"), p.get("bg"))
+        name = f"bg{i}.jpg"
+        with open(os.path.join(stage, name), "wb") as f:
+            f.write(jpg)
+        diy.append({"type": 5, "img": name, "sensor": [aster_sensor(*d) for d in ASTER_SENSORS]})
+    json.dump({"setup": {"switchTime": str(CFG.get("switch_time", "60")), "refresh": 1},
+               "mianban": [1], "diy": diy},
+              open(os.path.join(stage, "monitor.json"), "w"), ensure_ascii=False, indent=2)
+    subprocess.run(CFG["deploy_cmd"], shell=True, timeout=300,
+                   env={**os.environ, "GEM12_STAGE": stage})
+
+
 def push(panels):
+    if CFG.get("deploy_cmd"):
+        push_asterctl(panels)
+        return
     op = api_login()
     body = {"panels": []}
     for p in panels:
@@ -257,7 +305,7 @@ def push(panels):
 
 def apply_now():
     """Ask the AOOSTAR agent to reload panels (usually restarts its service)."""
-    cmd = CFG.get("restart_cmd")
+    cmd = None if CFG.get("deploy_cmd") else CFG.get("restart_cmd")
     if cmd:
         subprocess.run(cmd, shell=True, capture_output=True, timeout=180,
                        env={**os.environ, "GEM12_SWITCH": str(CFG.get("switch_time", "60"))})

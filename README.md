@@ -42,6 +42,25 @@ does not redistribute that agent; it drives it.
 * **No reverse-engineering needed at runtime** — but the [protocol notes](docs/protocol.md)
   document the USB framing anyway, plus a tool to decode captured frames.
 
+
+## Two backends
+
+The renderer is independent of how the picture reaches the panel:
+
+| backend | how the picture gets there | when |
+|---|---|---|
+| **asterctl** (recommended) | [`zehnm/aoostar-rs`](https://github.com/zehnm/aoostar-rs) speaks the protocol itself; we hand it `bg*.jpg` + `monitor.json` and a tiny sensor file | no vendor binary, no `type`/`mianban` hacks, display can be switched off, faster updates |
+| **vendor agent** (legacy) | AOOSTAR-X keeps running; we POST panels to its web API on `:5123` | only if you already depend on the vendor software |
+
+Pick with `deploy_cmd` in `config.json`: if it is set, the asterctl path is used and the
+vendor API is never contacted.
+
+```json
+"deploy_cmd": "tar czf - -C \"$GEM12_STAGE\" . | ssh screen-host 'tar xzf - -C /opt/gem12/panels && systemctl restart aster-panel'"
+```
+
+`host/install-asterctl.sh` sets that side up (binary + `sensors.py` + two systemd units).
+
 ## How it fits together
 
 ```
