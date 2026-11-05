@@ -135,3 +135,31 @@ If the web UI does not run on the same machine as the agent, point
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+## 中文说明
+
+把 AOOSTAR GEM12 机箱正面那块「没什么用」的 960×376 小屏，变成自己的副屏：
+选一张图 → 选版式 → 像换头像一样拖动/缩放裁切 → 上屏，左上角实时显示时间、CPU 温度、CPU 占用和内存。
+
+**三种版式**：圆角照片框 / 整屏铺满（左侧自动压暗保证文字可读）/ 背景图 + 照片框（背景和前景分开传）。
+
+**为什么要 `host/fix_config.py`**：AOOSTAR 自带的 Linux 代理有两个坑——
+1. 默认把屏当成 WTR MAX（`type=1`），在 GEM12 上直接黑屏，必须改成 `type=2`；
+2. 它会在自定义面板之间插播自带性能看板（`mianban` 轮播列表），清空并把内置 `diy` 面板改写成当前图，才不会"时不时跳回去"。
+
+**安装**：
+```bash
+# 1) 屏幕所在的机器（宿主）
+sudo ./host/install.sh /root/AOOSTAR-X-linux 60
+
+# 2) 能访问 5123 端口的任意机器（Web 界面）
+pip install -r webui/requirements.txt
+cp config.example.json config.json    # 按需修改
+python3 webui/app.py                  # http://0.0.0.0:5124
+```
+
+**中文标签需要中文字体**：`apt install fonts-noto-cjk`（或在 `config.json` 的 `fonts` 里指定字体路径），否则中文会变成方块。
+
+**本仓库不包含**：AOOSTAR 的任何二进制/字体、DDLC 的图片素材。协议细节见 [docs/protocol.md](docs/protocol.md)。
