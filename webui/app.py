@@ -385,6 +385,13 @@ h1{font-size:20px;font-weight:600;letter-spacing:.16em;color:#e07c9c;margin:0 0 
 button{background:#2a1b38;color:#f0e6fa;border:1px solid #4a2f5e;border-radius:9px;padding:7px 14px;cursor:pointer;font-size:13px}
 button:hover{background:#3a2349}
 .row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.apx{margin-top:18px;background:#141021;border:1px solid #241a33;border-radius:12px;padding:10px 14px}
+.apx summary{cursor:pointer;color:#c9b6e4;font-size:13px;letter-spacing:.04em}
+.apg{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.apg label{color:#8e7fa8;font-size:12px;display:flex;flex-direction:column;gap:5px}
+.apg input[type=text]{background:#0f0b17;border:1px solid #2b203c;color:#e9e2f5;border-radius:9px;padding:7px 10px;font-size:13px}
+.apc{display:flex;gap:18px;flex-wrap:wrap}
+.apc input[type=color]{width:46px;height:28px;border:1px solid #2b203c;border-radius:7px;background:#0f0b17}
 </style>
 <div class=wrap>
 <h1>GEM12 SUB-SCREEN</h1>
@@ -392,6 +399,20 @@ button:hover{background:#3a2349}
 <div id=drop>Drop an image here / click to choose</div>
 <input type=file id=f accept="image/*" multiple hidden>
 <div class=row><button onclick="act('restart')">Re-push</button><button onclick="act('setdefault')">Save as default</button><button onclick="act('reset')">Restore default</button></div>
+
+<details class=apx><summary>Appearance · header / tagline / colours</summary>
+<div class=apg>
+  <label>header<input type=text id=aHeader maxlength=40></label>
+  <label>tagline<input type=text id=aTagline maxlength=60></label>
+  <div class=apc>
+    <label>header<input type=color id=aHC></label>
+    <label>labels<input type=color id=aLC></label>
+    <label>tagline<input type=color id=aCC></label>
+  </div>
+  <button class=pri onclick="saveLook()">Save look &amp; push</button>
+  <span id=aLookStatus class=hint></span>
+</div>
+</details>
 <div class=grid id=list></div>
 </div>
 <script>
@@ -410,6 +431,26 @@ async function up(files){
 }
 async function act(a){const r=await fetch('/api/'+a,{method:'POST'}); drop.textContent=(await r.json()).msg; load();}
 async function del(id){await fetch('/api/del?id='+id,{method:'POST'}); load();}
+async function loadLook(){
+  const j=await (await fetch('/api/settings')).json();
+  document.getElementById('aHeader').value=j.header||'';
+  document.getElementById('aTagline').value=j.tagline||'';
+  const rgb=h=>/^#[0-9a-f]{6}$/i.test(h||'')?h:'#e47c9c';
+  document.getElementById('aHC').value=rgb(j.header_color);
+  document.getElementById('aLC').value=rgb(j.label_color);
+  document.getElementById('aCC').value=rgb(j.caption_color);
+}
+async function saveLook(){
+  const st=document.getElementById('aLookStatus'); st.textContent='saving…';
+  const body={header:document.getElementById('aHeader').value,
+              tagline:document.getElementById('aTagline').value,
+              header_color:document.getElementById('aHC').value,
+              label_color:document.getElementById('aLC').value,
+              caption_color:document.getElementById('aCC').value};
+  const r=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json(); st.textContent=j.msg||(j.ok?'saved':'failed');
+}
+loadLook();
 async function load(){
   const j=await (await fetch('/api/list')).json();
   document.getElementById('list').innerHTML=j.panels.map(p=>
@@ -590,6 +631,14 @@ _ZH = {
     "full-bleed darkens the left edge automatically so the readouts stay legible.":
         "整屏铺满会自动压暗左侧，保证读数看得清。",
     "'pushing…'": "'上屏中…'",
+    "<summary>Appearance · header / tagline / colours</summary>": "<summary>外观 · 顶部文字 / 底部文字 / 配色</summary>",
+    "<label>header<input type=text": "<label>顶部文字<input type=text",
+    "<label>tagline<input type=text": "<label>底部文字<input type=text",
+    "<label>header<input type=color": "<label>顶部<input type=color",
+    "<label>labels<input type=color": "<label>标签<input type=color",
+    "<label>tagline<input type=color": "<label>底部<input type=color",
+    ">Save look &amp; push<": ">保存并上屏<",
+    "'saving…'": "'保存中…'",
 }
 
 
@@ -744,6 +793,47 @@ def api_reset():
     push(d)
     apply_now()
     return jsonify(msg="restored default")
+
+
+APPEARANCE_KEYS = ("header", "tagline", "header_color", "label_color", "caption_color")
+
+
+@app.route("/api/settings", methods=["GET", "POST"])
+def api_settings():
+    """Read/write the look of the panel (header, tagline, colours) and re-push."""
+    global HEADER, TAGLINE, HEADER_COLOR, LABEL_COLOR, CAPTION_COLOR
+    if request.method == "GET":
+        return jsonify({k: CFG.get(k, "") for k in APPEARANCE_KEYS})
+
+    data = request.get_json(silent=True) or {}
+    for k in APPEARANCE_KEYS:
+        if k in data:
+            CFG[k] = str(data[k])[:80]
+
+    # persist only these keys, keeping credentials and everything else intact
+    path = os.path.join(ROOT, "config.json")
+    disk = {}
+    if os.path.exists(path):
+        try:
+            disk = json.load(open(path, encoding="utf-8"))
+        except Exception:
+            disk = {}
+    disk.update({k: CFG[k] for k in APPEARANCE_KEYS})
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(disk, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+
+    HEADER = CFG.get("header", "")
+    TAGLINE = CFG.get("tagline", "")
+    HEADER_COLOR = _hex_color(CFG.get("header_color"), (228, 124, 156))
+    LABEL_COLOR = _hex_color(CFG.get("label_color"), (160, 142, 190))
+    CAPTION_COLOR = _hex_color(CFG.get("caption_color"), (206, 155, 182))
+
+    try:
+        push(load())
+    except Exception as exc:  # saved on disk, push failed — say so instead of lying
+        return jsonify(ok=False, msg=f"saved, but push failed: {exc}"), 500
+    return jsonify(ok=True, msg="已保存并上屏" if LANG == "zh" else "saved & pushed")
 
 
 @app.route("/api/del", methods=["POST"])

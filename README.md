@@ -70,6 +70,10 @@ The panel is not tied to any one character or fandom. Everything that used to be
 Set `header` to anything you like — your name, a short phrase, a character you
 prefer, or just the machine's model. Leave it empty to draw no header at all.
 
+You do not have to edit the file: open the panel's web UI and use
+**Appearance · header / tagline / colours** — it writes `config.json` for you and
+re-pushes the screen immediately.
+
 The screenshot above happens to be one user's personal theme. **No artwork is
 bundled with this project**, and none is required: every panel image is uploaded
 by you.
@@ -259,6 +263,9 @@ health).
 
 `header` 想写什么都行：你的名字、一句短语、你喜欢的角色，或者干脆只写机型号。
 留空则不画顶部文字。
+
+不用改文件：网页首页有「外观 · 顶部文字 / 底部文字 / 配色」面板，改完点
+「保存并上屏」，它会写回 `config.json` 并立刻重推一次。
 
 上面的截图只是某位使用者的个人配色。**项目本身不附带任何图片素材**，也不需要——
 每一张图都由你自己上传。
