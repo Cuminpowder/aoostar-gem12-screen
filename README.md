@@ -224,6 +224,10 @@ The dashboard in
 is a good example of pushing the same hardware further (touch control, storage
 health).
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Recent: appearance editor in the web UI, Chinese interface, branding decoupled from any one character.
+
 ## Assets and licence
 
 - No vendor binaries, fonts or game artwork are included — bring your own images.
@@ -303,6 +307,8 @@ python3 webui/app.py                  # http://0.0.0.0:5124
 **厂商后端（legacy）**：`sudo ./host/install.sh /root/AOOSTAR-X-linux 60`
 会顺带装上 `gem12-screen-fix.service`，开机时修正两个厂商 bug：
 把机型设成 `type=2`（否则黑屏）、清空 `mianban` 轮播（否则会跳回自带看板）。
+
+**更新记录**：见 [CHANGELOG.md](CHANGELOG.md)。最近一版：网页内可直接改外观、中文界面、品牌与任何角色解耦。
 
 **本仓库不包含**：AOOSTAR 的任何二进制或字体、任何游戏素材。
 协议细节见 [docs/protocol.md](docs/protocol.md)。
