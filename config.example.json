@@ -8,5 +8,9 @@
   "data_dir": "./data",
   "switch_time": "60",
   "header": "GEM12",
+  "tagline": "",
+  "header_color": "#E47C9C",
+  "label_color": "#A08EBE",
+  "caption_color": "#CE9BB6",
   "fonts": []
 }

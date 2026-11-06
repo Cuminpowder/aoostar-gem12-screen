@@ -17,7 +17,7 @@ is included for people already depending on it.
 
 ```
 ┌──────────────────────────── 960 × 376 ─────────────────────────────┐
-│  J U S T   M O N I K A                                  ╭────────╮  │
+│  G E M 1 2                                              ╭────────╮  │
 │                                                         │        │  │
 │  21:47                                                  │  photo │  │
 │  2026/11/05                                             │  card  │  │
@@ -43,6 +43,36 @@ is included for people already depending on it.
   repairs the two settings the vendor agent gets wrong on a GEM12.
 - **Protocol notes included** — the reverse-engineered USB framing is documented
   in [docs/protocol.md](docs/protocol.md), with a tool to decode captured frames.
+
+## Make it yours
+
+The panel is not tied to any one character or fandom. Everything that used to be
+"Just Monika" in a personal setup is a plain config value:
+
+| key | what it controls | default |
+|---|---|---|
+| `header` | the label across the top — letters are auto-spaced | `GEM12` |
+| `tagline` | the default line at the bottom (a per-image `caption` overrides it) | empty |
+| `header_color` | header colour, `#RRGGBB` | `#E47C9C` |
+| `label_color` | sensor-label colour | `#A08EBE` |
+| `caption_color` | tagline colour | `#CE9BB6` |
+
+```json
+{
+  "header": "JUST MONIKA",
+  "tagline": "今天也辛苦了。",
+  "header_color": "#E47C9C",
+  "label_color": "#A08EBE",
+  "caption_color": "#CE9BB6"
+}
+```
+
+Set `header` to anything you like — your name, a short phrase, a character you
+prefer, or just the machine's model. Leave it empty to draw no header at all.
+
+The screenshot above happens to be one user's personal theme. **No artwork is
+bundled with this project**, and none is required: every panel image is uploaded
+by you.
 
 ## Two backends
 
@@ -137,6 +167,10 @@ If the web UI and the screen live on different machines, point `deploy_cmd` (or
 | `data_dir` | `./data` | uploads, `panels.json`, `defaults.json` |
 | `switch_time` | `60` | seconds per panel when rotating |
 | `header` | `GEM12` | small letter-spaced label at the top of the panel |
+| `tagline` | *(empty)* | default bottom line; a per-panel `caption` overrides it |
+| `header_color` | `#E47C9C` | header colour (`#RRGGBB`) |
+| `label_color` | `#A08EBE` | sensor-label colour |
+| `caption_color` | `#CE9BB6` | tagline colour |
 | `fonts` | `[]` | extra font paths, tried before the built-in candidates |
 
 ## Usage
@@ -206,6 +240,25 @@ health).
 | 照片框 | 深色渐变底 + 右侧圆角照片 |
 | 整屏铺满 | 图片铺满整块屏，左侧自动压暗，保证文字可读 |
 | 背景 + 照片框 | 背景图单独上传，前景照片框叠在上面 |
+
+### 自定义外观（不绑定任何角色）
+
+这个项目不预设任何角色或圈子。之前在个人配置里叫「JUST MONIKA」的东西，
+全部是一个个配置项：
+
+| 键 | 作用 | 默认 |
+|---|---|---|
+| `header` | 顶部那行字，字母会自动加空格 | `GEM12` |
+| `tagline` | 默认底部一行字（单张图的 `caption` 会覆盖它） | 空 |
+| `header_color` | 顶部文字颜色，`#RRGGBB` | `#E47C9C` |
+| `label_color` | 传感器标签颜色 | `#A08EBE` |
+| `caption_color` | 底部文字颜色 | `#CE9BB6` |
+
+`header` 想写什么都行：你的名字、一句短语、你喜欢的角色，或者干脆只写机型号。
+留空则不画顶部文字。
+
+上面的截图只是某位使用者的个人配色。**项目本身不附带任何图片素材**，也不需要——
+每一张图都由你自己上传。
 
 ### 两种后端
 

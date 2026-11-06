@@ -53,6 +53,26 @@ def load_config():
 
 CFG = load_config()
 HEADER = CFG.get("header", "GEM12")
+TAGLINE = CFG.get("tagline", "")
+
+
+def _hex_color(value, default):
+    """'#RRGGBB' / 'RRGGBB' -> (r, g, b); anything else falls back to default."""
+    if isinstance(value, (list, tuple)) and len(value) == 3:
+        return tuple(int(v) for v in value)
+    if isinstance(value, str):
+        v = value.strip().lstrip("#")
+        if len(v) == 6:
+            try:
+                return tuple(int(v[i:i + 2], 16) for i in (0, 2, 4))
+            except ValueError:
+                pass
+    return default
+
+
+HEADER_COLOR = _hex_color(CFG.get("header_color"), (228, 124, 156))
+LABEL_COLOR = _hex_color(CFG.get("label_color"), (160, 142, 190))
+CAPTION_COLOR = _hex_color(CFG.get("caption_color"), (206, 155, 182))
 APP_URL = CFG["aoostar_url"].rstrip("/")
 UP = os.path.join(CFG["data_dir"], "uploads")
 STORE = os.path.join(CFG["data_dir"], "panels.json")
@@ -201,12 +221,13 @@ def compose(im, caption="", cx=None, cy=None, cw=None, style="card", bg_path=Non
         bg.alpha_composite(card, (FX, FY))
 
     d = ImageDraw.Draw(bg)
-    d.text((CX, 34), "  ".join(HEADER.upper()), font=F(15), fill=(228, 124, 156), anchor="mt")
+    d.text((CX, 34), "  ".join(HEADER.upper()), font=F(15), fill=HEADER_COLOR, anchor="mt")
     for y, label in ROWS:
-        d.text((70, y), label, font=F(22), fill=(160, 142, 190), anchor="lm")
+        d.text((70, y), label, font=F(22), fill=LABEL_COLOR, anchor="lm")
         d.line([(70, y + 24), (400, y + 24)], fill=(46, 38, 64))
-    if caption:
-        d.text((CX, 348), caption, font=F(16), fill=(206, 155, 182), anchor="mm")
+    text = caption or TAGLINE
+    if text:
+        d.text((CX, 348), text, font=F(16), fill=CAPTION_COLOR, anchor="mm")
 
     out = io.BytesIO()
     bg.convert("RGB").save(out, "JPEG", quality=92)
