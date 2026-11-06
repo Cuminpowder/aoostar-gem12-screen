@@ -167,6 +167,7 @@ If the web UI and the screen live on different machines, point `deploy_cmd` (or
 | `restart_cmd` | `systemctl restart aoostar-x-service` | run after a push (legacy backend only) |
 | `data_dir` | `./data` | uploads, `panels.json`, `defaults.json` |
 | `switch_time` | `60` | seconds per panel when rotating |
+| `lang` | `en` | UI language: `en` or `zh` |
 | `header` | `GEM12` | small letter-spaced label at the top of the panel |
 | `tagline` | *(empty)* | default bottom line; a per-panel `caption` overrides it |
 | `header_color` | `#E47C9C` | header colour (`#RRGGBB`) |
@@ -249,6 +250,7 @@ health).
 
 | 键 | 作用 | 默认 |
 |---|---|---|
+| `lang` | 界面语言：`en` 或 `zh` | `en` |
 | `header` | 顶部那行字，字母会自动加空格 | `GEM12` |
 | `tagline` | 默认底部一行字（单张图的 `caption` 会覆盖它） | 空 |
 | `header_color` | 顶部文字颜色，`#RRGGBB` | `#E47C9C` |

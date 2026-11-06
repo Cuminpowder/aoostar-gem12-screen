@@ -554,6 +554,56 @@ markStyle(); layout();
 </script>"""
 
 
+# ---------------------------------------------------------------- i18n
+# UI language: "en" (default) or "zh". Only the labels are translated; the
+# markup, ids and CSS stay identical so both languages share one template.
+LANG = (CFG.get("lang") or "en").lower()
+
+_ZH = {
+    "<title>GEM12 Sub-Screen</title>": "<title>GEM12 副屏</title>",
+    "<title>Crop · GEM12 Sub-Screen</title>": "<title>裁切 · GEM12 副屏</title>",
+    "<h1>GEM12 SUB-SCREEN</h1>": "<h1>GEM12 副屏</h1>",
+    "Upload an image → pick a layout (card / full-bleed / background + card) → crop freely → push to the 960×376 screen.":
+        "上传一张图 → 选版式（照片框 / 整屏铺满 / 背景 + 照片框）→ 自由拖动缩放裁切 → 推到 960×376 小屏。",
+    ">Drop an image here / click to choose<": ">把图片拖到这里，或点击选择<",
+    ">Re-push<": ">重新上屏<",
+    ">Save as default<": ">设为默认<",
+    ">Restore default<": ">恢复默认<",
+    "'uploading…'": "'上传中…'",
+    ">crop<": ">裁切<",
+    ">del<": ">删除<",
+    "no panels yet": "还没有面板，先上传一张图",
+    "<h1>Framing · drag to pan / scroll to zoom</h1>": "<h1>裁切 · 拖动平移 / 滚轮缩放</h1>",
+    "<div class=lbl>layout</div>": "<div class=lbl>版式</div>",
+    ">card<": ">照片框<",
+    ">full-bleed<": ">整屏铺满<",
+    ">bg + card<": ">背景 + 照片框<",
+    ">background image (for \"bg + card\")<": ">背景图（用于「背景 + 照片框」）<",
+    "background: ": "背景：",
+    "<div class=lbl style=\"margin-top:12px\">zoom</div>": "<div class=lbl style=\"margin-top:12px\">缩放</div>",
+    "<div class=lbl style=\"margin-top:12px\">caption (optional)</div>": "<div class=lbl style=\"margin-top:12px\">底部一句话（可选）</div>",
+    "placeholder=\"a line of text at the bottom\"": "placeholder=\"写在屏幕底部的一行字\"",
+    ">Apply to screen<": ">应用并上屏<",
+    ">Reset<": ">重置<",
+    ">Back<": ">返回<",
+    "<div class=lbl>live preview (what the screen gets)</div>": "<div class=lbl>实时预览（上屏就是这个样子）</div>",
+    "full-bleed darkens the left edge automatically so the readouts stay legible.":
+        "整屏铺满会自动压暗左侧，保证读数看得清。",
+    "'pushing…'": "'上屏中…'",
+}
+
+
+def _localize(tpl: str) -> str:
+    if LANG != "zh":
+        return tpl
+    for en, zh in _ZH.items():
+        tpl = tpl.replace(en, zh)
+    return tpl
+
+
+INDEX = _localize(INDEX)
+EDIT = _localize(EDIT)
+
 # ---------------------------------------------------------------- routes
 @app.route("/")
 def index():
