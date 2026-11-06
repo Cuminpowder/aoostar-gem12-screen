@@ -1,7 +1,7 @@
 {
   "aoostar_url": "http://127.0.0.1:5123",
-  "username": "admin",
-  "password": "123456",
+  "username": "",
+  "password": "",
   "restart_cmd": "systemctl restart aoostar-x-service",
   "deploy_cmd": "",
   "deploy_dir": "",

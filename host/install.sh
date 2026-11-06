@@ -58,5 +58,5 @@ sleep 4
 systemctl --no-pager --lines=0 status gem12-screen-fix.service aoostar-x-service.service || true
 
 echo
-echo "Agent UI:  http://127.0.0.1:5123  (default admin/123456 — change it)"
+echo "Agent UI:  http://127.0.0.1:5123  (vendor factory default — change it)"
 echo "Next:      run webui/ on any box that can reach port 5123"

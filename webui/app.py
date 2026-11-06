@@ -31,8 +31,10 @@ ROOT = os.path.dirname(HERE)
 def load_config():
     cfg = {
         "aoostar_url": "http://127.0.0.1:5123",
-        "username": "admin",
-        "password": "123456",
+        # Vendor agent credentials. Leave empty until you have changed the
+        # factory default on the device — never ship a known default here.
+        "username": "",
+        "password": "",
         "restart_cmd": "systemctl restart aoostar-x-service",
         "deploy_cmd": "",          # e.g. "ssh screen-host 'tar xzf - -C /opt/gem12/panels && systemctl restart aster-panel'"
         "deploy_dir": "",          # local staging dir; defaults to <data_dir>/push
@@ -256,6 +258,11 @@ SENSORS = [
 
 
 def api_login():
+    if not CFG.get("username") or not CFG.get("password"):
+        raise RuntimeError(
+            "vendor backend needs credentials: set username/password in config.json "
+            "and change the factory default on the device first"
+        )
     cj = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     op.open(APP_URL + "/", data=urllib.parse.urlencode(

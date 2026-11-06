@@ -139,8 +139,9 @@ This installs `aoostar-x-service.service` plus `gem12-screen-fix.service`, a
 one-shot guard ordered **before** the agent that forces `type=2` (GEM12), clears
 the built-in panel rotation and mirrors the built-in panels to your custom one.
 
-The agent's own UI then listens on `http://127.0.0.1:5123` (default
-`admin` / `123456` — change it).
+The agent's own UI then listens on `http://127.0.0.1:5123`. It ships with the
+vendor's **factory-default credentials** — set your own before the port is
+reachable from anywhere but localhost.
 
 ### 3. Web UI — any machine that can reach the screen host
 
@@ -162,7 +163,7 @@ If the web UI and the screen live on different machines, point `deploy_cmd` (or
 | `deploy_cmd` | *(empty)* | shell command that receives `$GEM12_STAGE`; set it to use the asterctl backend |
 | `deploy_dir` | `<data_dir>/push` | local staging directory for rendered panels |
 | `aoostar_url` | `http://127.0.0.1:5123` | vendor agent API (legacy backend only) |
-| `username` / `password` | `admin` / `123456` | vendor agent credentials (legacy backend only) |
+| `username` / `password` | vendor factory defaults | vendor agent credentials (legacy backend only) — change them |
 | `restart_cmd` | `systemctl restart aoostar-x-service` | run after a push (legacy backend only) |
 | `data_dir` | `./data` | uploads, `panels.json`, `defaults.json` |
 | `switch_time` | `60` | seconds per panel when rotating |
@@ -286,6 +287,9 @@ python3 webui/app.py                  # http://0.0.0.0:5124
 
 **中文字体**：`apt install fonts-noto-cjk`，或把字体放进 `/opt/gem12/fonts/`、
 在 `config.json` 的 `fonts` 里指定路径，否则中文会变成方块。
+
+**安全**：厂商代理默认用出厂口令，首次启动后请立刻改掉；`:5123` 只应监听在本机或内网，
+不要直接暴露到公网。本项目不会替你管理这组凭证。
 
 **厂商后端（legacy）**：`sudo ./host/install.sh /root/AOOSTAR-X-linux 60`
 会顺带装上 `gem12-screen-fix.service`，开机时修正两个厂商 bug：

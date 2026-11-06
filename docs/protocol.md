@@ -40,7 +40,7 @@ panel, then your real one).
 
 ## Vendor agent internals worth knowing
 
-* Web UI on `:5123` (Flask, default `admin` / `123456`), state in
+* Web UI on `:5123` (Flask, vendor factory-default credentials), state in
   `Monitor3.json` and `custom_panels.json`, images in `img/<uuid>.jpg`.
 * `POST /save_custom_panels` with `{"panels":[{"id","name","checked","imgData","sensor":[...]}]}`
   is the supported way to install a panel; `imgData` is a `data:image/jpeg;base64,…` URL.
